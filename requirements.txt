@@ -1,0 +1,9 @@
+#for the crawler
+scrapy
+dotenv
+bs4
+html2text
+
+#other
+lxml
+tqdm
