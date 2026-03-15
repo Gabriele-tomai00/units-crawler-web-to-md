@@ -1,4 +1,4 @@
-# Domini da bloccare
+# Domains to block
 [@deny_domains]
 arts.units.it
 openstarts.units.it
@@ -37,7 +37,7 @@ wmail2.units.it
 suggerimenti.units.it
 sebina.units.it
 
-# Regex da bloccare
+# Regex to block
 [@deny_regex]
 .*feedback.*
 .*search.*
