@@ -116,8 +116,8 @@ python3 scripts/domains_numbers.py --depth 4 --dir results/
 Run the full pipeline with:
 
 ```bash
-./pipeline_scraping.sh
-./pipeline_scraping.sh --depth 6
+./pipeline_crawl_and_convert.sh
+./pipeline_crawl_and_convert.sh --depth 6
 ```
 
 The pipeline:

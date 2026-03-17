@@ -2,7 +2,6 @@ set -e
 
 ENV_DIR="env"
 REQUIREMENTS_FILE="requirements.txt"
-# Output directory for results : results_scrapy
 
 # --- Default depth limit ---
 DEPTH_LIMIT=4
@@ -24,13 +23,12 @@ done
 printf "Using DEPTH_LIMIT = $DEPTH_LIMIT \n"
 
 # --- Check/Create Virtual Environment ---
+EXPECTED_ENV="$PWD/$ENV_DIR"
+
 if [[ ! -d "$ENV_DIR" ]]; then
     printf "Virtual environment not found. Creating it in '$ENV_DIR'...\n"
     python3 -m venv "$ENV_DIR"
-
-    printf "Virtual environment created. Activating it and installing requirements...\n"
     source "$ENV_DIR/bin/activate"
-
     if [[ -f "$REQUIREMENTS_FILE" ]]; then
         pip install --upgrade pip
         pip install -r "$REQUIREMENTS_FILE"
@@ -38,16 +36,23 @@ if [[ ! -d "$ENV_DIR" ]]; then
         printf "WARNING: requirements.txt not found. Continuing without installing packages.\n"
     fi
 else
-    printf "Virtual environment already exists."
-
-    if [[ -z "$VIRTUAL_ENV" ]]; then
+    # Activate if not active, or if a different env is active
+    if [[ "$VIRTUAL_ENV" != "$EXPECTED_ENV" ]]; then
         printf "Activating virtual environment...\n"
         source "$ENV_DIR/bin/activate"
     else
         printf "Virtual environment already active: $VIRTUAL_ENV\n"
     fi
+
+    # Always sync requirements in case requirements.txt has changed
+    if [[ -f "$REQUIREMENTS_FILE" ]]; then
+        printf "Syncing requirements...\n"
+        pip install -q -r "$REQUIREMENTS_FILE"
+    fi
 fi
 
+export PATH="$EXPECTED_ENV/bin:$PATH"
+printf "Using Python: $(which python3)\n"  # debug: confirm correct python
 
 
 # --- Delete old results ---
@@ -74,9 +79,7 @@ printf "\nRun pages_cleaner.py\n"
 python3 scripts/pages_cleaner.py \
     --input "results_scrapy/scraper_results_${DEPTH_LIMIT}/" \
     --output "results_scrapy/filtered_items_${DEPTH_LIMIT}.jsonl" \
-    --verbose
 # 
 # python3 scripts/pages_cleaner.py \
 #     --input "results_scrapy/scraper_results_1/" \
 #     --output "results_scrapy/filtered_items_1.jsonl" \
-#     --verbose
